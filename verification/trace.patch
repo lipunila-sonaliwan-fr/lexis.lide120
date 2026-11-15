@@ -1,0 +1,58 @@
+--- a/backend/genesys/test_scanner_interface.cpp	2025-05-24 21:57:32.000000000 +0200
++++ b/backend/genesys/test_scanner_interface.cpp	2026-11-14 23:41:07.684197430 +0100
+@@ -23,6 +23,10 @@
+ #include "test_scanner_interface.h"
+ #include "device.h"
+ #include <cstring>
++#include <cstdio>
++#include <cstdlib>
++static FILE* trace_file() { static FILE* f = nullptr; if (!f && std::getenv("GENESYS_TRACE")) f = std::fopen(std::getenv("GENESYS_TRACE"), "w"); return f; }
++static unsigned crc_of(const std::uint8_t* d, std::size_t n) { unsigned c = 0xffffffffu; for (std::size_t i = 0; i < n; ++i) { c ^= d[i]; for (int k = 0; k < 8; ++k) c = (c >> 1) ^ (0xedb88320u & (0u - (c & 1u))); } return ~c; }
+ 
+ namespace genesys {
+ 
+@@ -89,17 +93,20 @@
+ 
+ void TestScannerInterface::write_register(std::uint16_t address, std::uint8_t value)
+ {
++    if (trace_file()) std::fprintf(trace_file(), "W %03x %02x\n", address, value);
+     cached_regs_.update(address, value);
+ }
+ 
+ void TestScannerInterface::write_registers(const Genesys_Register_Set& regs)
+ {
++    if (trace_file()) for (const auto& r : regs) std::fprintf(trace_file(), "W %03x %02x\n", r.address, r.value);
+     cached_regs_.update(regs);
+ }
+ 
+ 
+ void TestScannerInterface::write_0x8c(std::uint8_t index, std::uint8_t value)
+ {
++    if (trace_file()) std::fprintf(trace_file(), "8C %02x %02x\n", index, value);
+     (void) index;
+     (void) value;
+ }
+@@ -137,6 +144,7 @@
+ 
+ void TestScannerInterface::write_ahb(std::uint32_t addr, std::uint32_t size, std::uint8_t* data)
+ {
++    if (trace_file()) std::fprintf(trace_file(), "AHB %08x %u %08x\n", addr, size, crc_of(data, size));
+     (void) addr;
+     (void) size;
+     (void) data;
+@@ -149,6 +157,7 @@
+ 
+ void TestScannerInterface::write_fe_register(std::uint8_t address, std::uint16_t value)
+ {
++    if (trace_file()) std::fprintf(trace_file(), "FE %02x %04x\n", address, value);
+     cached_fe_regs_.update(address, value);
+ }
+ 
+@@ -195,6 +204,7 @@
+ 
+ void TestScannerInterface::test_checkpoint(const std::string& name)
+ {
++    if (trace_file()) std::fprintf(trace_file(), "# %s\n", name.c_str());
+     if (checkpoint_callback_) {
+         checkpoint_callback_(*dev_, *this, name);
+     }
