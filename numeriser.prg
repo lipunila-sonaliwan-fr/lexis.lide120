@@ -91,12 +91,12 @@ procedure SCANNER_FERMER()
   si DEV = nul
     retourner
   finsi
-  si non DEV.tr.simulation
-    essayer
+  essayer
+    si non DEV.tr.simulation
       DEV.tr.p:fermer()
-    capturer e
-    finessayer
-  finsi
+    finsi
+  capturer e
+  finessayer
   DEV = nul
 retourner
 

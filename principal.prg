@@ -120,7 +120,7 @@ barret.surclic = @ACTION_ARRETER
 
 bas = fen:ajouter(ui.rangee())
 bas.ancrage = "bas"
-bas.marge = 6
+bas.marge = 8
 bas.espacement = 8
 etat = bas:ajouter(ui.etiquette("Prêt."))
 etat.poids = 1
@@ -137,14 +137,15 @@ jauge.max = 1
 jauge.num = 0
 
 && --- réglages (à gauche) -----------------------------------------------------
-gauche = fen:ajouter(ui.colonne())
+&& gauche = fen:ajouter(ui.colonne())
+gauche = fen:ajouter(ui.panneau{disposition="vertical", defilement="automatique", colonnes="1"})
 gauche.ancrage = "gauche"
-gauche.largeurfixe = 330
+gauche.largeurfixe = 410
 gauche.marge = 8
 gauche.espacement = 6
 
 cnum = gauche:ajouter(ui.cadre("Numérisation"))
-cnum.espacement = 4
+cnum.espacement = 0
 cmode = CHAMP(cnum, "Mode", ui.combo("Couleur", "Gris", "Trait (noir et blanc)"))
 cmode:selectionner(1)
 cres = CHAMP(cnum, "Résolution", ui.combo())
@@ -156,7 +157,7 @@ cprof = CHAMP(cnum, "Profondeur", ui.combo("8 bits", "16 bits"))
 cprof:selectionner(1)
 
 czone = gauche:ajouter(ui.cadre("Zone (mm)"))
-czone.espacement = 4
+czone.espacement = 0
 cformat = czone:ajouter(ui.combo())
 pour chaque f dans FORMATS
   cformat:ajouter(f[1])
@@ -181,7 +182,7 @@ lzone = czone:ajouter(ui.etiquette(""))
 lzone.couleur = "#6C757D"
 
 cret = gauche:ajouter(ui.cadre("Retouches"))
-cret.espacement = 4
+cret.espacement = 0
 cluminosite = CHAMP(cret, "Luminosité", ui.curseur())
 cluminosite.min = -50
 cluminosite.max = 50
@@ -194,7 +195,7 @@ crotation = CHAMP(cret, "Rotation", ui.combo("Aucune", "90° à droite", "180°"
 crotation:selectionner(1)
 
 csortie = gauche:ajouter(ui.cadre("Enregistrement"))
-csortie.espacement = 4
+csortie.espacement = 0
 cfichier = CHAMP(csortie, "Format", ui.combo("PDF", "JPEG", "PNG", "TIFF"))
 cfichier:selectionner(1)
 squalite = DERNIERE_RANGEE:ajouter(ui.saisie("88"))
@@ -263,13 +264,12 @@ SCANNER_FERMER()
 
 fonction CHAMP(conteneur, t, controle)
   locale r = conteneur:ajouter(ui.rangee())
-  r.espacement = 6
-  r.hauteurfixe = 44
+  r.hauteurfixe = 54
   locale e = r:ajouter(ui.etiquette(t))
   e.couleur = "#495057"
   e.largeurfixe = 92
   locale c = r:ajouter(controle)
-  c.poids = 1
+  c.largeurfixe = 172
   globale DERNIERE_RANGEE
   DERNIERE_RANGEE = r
 retourner c
@@ -279,7 +279,7 @@ fonction PETIT_CHAMP(rangee, t, v)
   e.couleur = "#495057"
   e.largeurfixe = 62
   locale c = rangee:ajouter(ui.saisie(v))
-  c.largeurfixe = 70
+  c.largeurfixe = 66
 retourner c
 
 procedure NOTER(msg)
